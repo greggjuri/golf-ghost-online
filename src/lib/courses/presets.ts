@@ -16,7 +16,7 @@ export interface PresetCourse {
 
 /**
  * Preset courses available for selection
- * Note: Par values corrected from source (hole 8 was 8, changed to 4)
+ * Note: Hole 8 is par 5 (471/424 yards)
  */
 export const PRESET_COURSES: PresetCourse[] = [
   {
@@ -25,7 +25,7 @@ export const PRESET_COURSES: PresetCourse[] = [
     teeName: 'Blue',
     courseRating: 69.7,
     slopeRating: 126,
-    parValues: [4, 3, 4, 3, 5, 4, 4, 4, 4, 4, 4, 3, 5, 4, 4, 5, 3, 4],
+    parValues: [4, 3, 4, 3, 5, 4, 4, 5, 4, 4, 4, 3, 5, 4, 4, 5, 3, 4],
     holeHandicaps: [3, 17, 15, 7, 9, 11, 1, 13, 5, 4, 14, 18, 8, 12, 6, 10, 16, 2],
     yardages: [349, 154, 308, 177, 488, 313, 365, 471, 352, 354, 313, 142, 520, 320, 374, 478, 148, 338],
   },
@@ -35,7 +35,7 @@ export const PRESET_COURSES: PresetCourse[] = [
     teeName: 'White',
     courseRating: 66.9,
     slopeRating: 113,
-    parValues: [4, 3, 4, 3, 5, 4, 4, 4, 4, 4, 4, 3, 5, 4, 4, 5, 3, 4],
+    parValues: [4, 3, 4, 3, 5, 4, 4, 5, 4, 4, 4, 3, 5, 4, 4, 5, 3, 4],
     holeHandicaps: [3, 17, 15, 7, 9, 11, 1, 13, 5, 4, 14, 18, 8, 12, 6, 10, 16, 2],
     yardages: [286, 126, 277, 124, 458, 274, 349, 424, 326, 282, 274, 128, 427, 293, 335, 429, 119, 311],
   },
