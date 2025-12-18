@@ -15,9 +15,10 @@ aws cloudfront get-distribution-config --id $DISTRIBUTION_ID > /tmp/cf-config.js
 ETAG=$(jq -r '.ETag' /tmp/cf-config.json)
 echo "Current ETag: $ETAG"
 
-# Modify config to add custom error response
-# This makes 404 errors return index.html with 200 status (SPA routing)
-jq '.DistributionConfig.CustomErrorResponses = {
+# Modify config:
+# 1. Set DefaultRootObject to index.html (serves index.html at root path)
+# 2. Add custom error response for 404 -> index.html (SPA routing)
+jq '.DistributionConfig.DefaultRootObject = "index.html" | .DistributionConfig.CustomErrorResponses = {
   "Quantity": 1,
   "Items": [
     {
@@ -36,8 +37,9 @@ aws cloudfront update-distribution \
   --if-match $ETAG \
   --distribution-config file:///tmp/cf-update.json > /dev/null
 
-echo "CloudFront error pages configured"
-echo "  404 errors now return /index.html with 200 status"
+echo "CloudFront configured"
+echo "  DefaultRootObject: index.html"
+echo "  404 errors return /index.html with 200 status (SPA routing)"
 echo "  Distribution: $DISTRIBUTION_ID"
 echo ""
 echo "Note: Changes may take a few minutes to propagate."
