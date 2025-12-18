@@ -1,10 +1,10 @@
 # Golf Ghost Online - Task Tracker
 
 ## Current Phase
-**Phase 6: Integration & Deploy**
+**Phase 6: Integration & Deploy** - COMPLETE
 
 ## Active Task
-`25-build-deploy` - Build static site and deploy to S3
+None - All tasks complete! Site live at https://ghost.jurigregg.com
 
 ## Task Status
 
@@ -55,8 +55,8 @@
   - Updated CourseSelector to fetch courses from API
   - Fallback to preset courses if API unavailable
   - .env.local with NEXT_PUBLIC_API_URL
-- [ ] **25-build-deploy** - Build static site and deploy to S3
-- [ ] **26-verify-live** - Verify ghost.jurigregg.com works
+- [x] **25-build-deploy** - Build static site and deploy to S3
+- [x] **26-verify-live** - Verify ghost.jurigregg.com works
 
 ## Completed Tasks
 - [x] **00-context-engineering** - Created foundational docs and commands
@@ -105,6 +105,11 @@
   - useScoreGeneration hook calls Lambda API for generation
   - CourseSelector fetches courses from API with preset fallback
   - Error handling for API failures displayed in UI
+- [x] **25-26-deploy-verify** - Build and deploy site to production:
+  - Built Next.js static export to out/ directory
+  - Deployed to S3 bucket (golf-ghost-online)
+  - CloudFront distribution with DefaultRootObject and SPA routing
+  - Site live at https://ghost.jurigregg.com
 
 ## Blockers
 None currently
