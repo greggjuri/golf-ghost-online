@@ -15,11 +15,11 @@
 - [ ] **03-layout-styling** - Root layout with dark theme, header like Python app
 
 ### Phase 2: Scoring Engine (CRITICAL)
-- [ ] **04-scoring-types** - TypeScript interfaces matching Python data structures
-- [ ] **05-gaussian-random** - Implement Gaussian random number generator
-- [ ] **06-handicap-calc** - Port course handicap and stroke allocation logic
-- [ ] **07-score-generator** - Port full GhostGolfer class from Python
-- [ ] **08-scoring-tests** - Unit tests validating against Python implementation
+- [x] **04-scoring-types** - TypeScript interfaces matching Python data structures
+- [x] **05-gaussian-random** - Implement Gaussian random number generator
+- [x] **06-handicap-calc** - Port course handicap and stroke allocation logic
+- [x] **07-score-generator** - Port full GhostGolfer class from Python
+- [x] **08-scoring-tests** - Unit tests validating against Python implementation (62 tests passing)
 
 ### Phase 3: UI Components
 - [ ] **09-score-form** - Input form for handicap, course rating, slope, par values
@@ -50,6 +50,12 @@
 ## Completed Tasks
 - [x] **00-context-engineering** - Created foundational docs and commands
 - [x] **01-project-foundation** - Next.js 14 with TypeScript, Tailwind, project structure, types, home page
+- [x] **04-08-scoring-engine** - Complete scoring engine port from Python:
+  - gaussian.ts: Box-Muller transform for Gaussian random
+  - handicap.ts: Course handicap & stroke allocation (USGA formula)
+  - validation.ts: Zod schemas for config validation
+  - generator.ts: GhostGolfer class with full scoring algorithm
+  - 62 unit tests all passing
 
 ## Blockers
 None currently
