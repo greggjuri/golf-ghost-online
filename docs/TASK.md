@@ -4,7 +4,7 @@
 **Phase 4: Lambda Functions**
 
 ## Active Task
-`13-lambda-setup` - Lambda project structure with shared scoring code
+`16-dynamodb-table` - Create/configure DynamoDB table for courses
 
 ## Task Status
 
@@ -28,9 +28,9 @@
 - [x] **12-course-selector** - Dropdown for selecting saved courses
 
 ### Phase 4: Lambda Functions
-- [ ] **13-lambda-setup** - Lambda project structure with shared scoring code
-- [ ] **14-generate-lambda** - `generate-score` Lambda function
-- [ ] **15-courses-lambda** - Course CRUD Lambda functions
+- [x] **13-lambda-setup** - Lambda project structure with shared scoring code
+- [x] **14-generate-lambda** - `generate-score` Lambda function
+- [x] **15-courses-lambda** - Course CRUD Lambda functions
 - [ ] **16-dynamodb-table** - Create/configure DynamoDB table for courses
 - [ ] **17-seed-courses** - Seed Baytree courses from `golf_courses.json`
 
@@ -66,6 +66,18 @@
   - ScoreCard.tsx: Full 18-hole scorecard with OUT/IN/TOT
   - useScoreGeneration.ts: Hook for generation logic
   - presets.ts: Baytree Blue/White course data
+- [x] **13-15-lambda-api** - Complete Lambda API layer (PRP-10):
+  - lambda/package.json: Dependencies (AWS SDK, uuid, zod)
+  - lambda/tsconfig.json: ESM/NodeNext configuration
+  - lambda/shared/scoring/: Copied scoring engine with ESM imports
+  - lambda/shared/types.ts: CourseSchema with Zod validation
+  - lambda/shared/response.ts: API response helpers with CORS
+  - lambda/shared/db.ts: DynamoDB client with CRUD operations
+  - lambda/generate-score/: POST /generate-score handler
+  - lambda/get-courses/: GET /courses handler
+  - lambda/create-course/: POST /courses handler
+  - lambda/delete-course/: DELETE /courses/{id} handler
+  - scripts/sync-scoring.sh: Sync script for scoring code changes
 
 ## Blockers
 None currently
