@@ -27,22 +27,25 @@
 - [ ] **11-stats-cards** - Gross score, net score, course handicap display cards
 - [ ] **12-course-selector** - Dropdown for selecting saved courses
 
-### Phase 4: API & Data
-- [ ] **13-generate-api** - POST `/api/generate` endpoint for score generation
-- [ ] **14-courses-api** - CRUD endpoints for courses
-- [ ] **15-dynamodb-setup** - DynamoDB table and connection
-- [ ] **16-seed-courses** - Seed Baytree courses from `golf_courses.json`
+### Phase 4: Lambda Functions
+- [ ] **13-lambda-setup** - Lambda project structure with shared scoring code
+- [ ] **14-generate-lambda** - `generate-score` Lambda function
+- [ ] **15-courses-lambda** - Course CRUD Lambda functions
+- [ ] **16-dynamodb-table** - Create/configure DynamoDB table for courses
+- [ ] **17-seed-courses** - Seed Baytree courses from `golf_courses.json`
 
-### Phase 5: Integration
-- [ ] **17-full-flow** - Connect form → API → display
-- [ ] **18-mobile-responsive** - Ensure mobile-friendly layout
-- [ ] **19-error-handling** - User-friendly error messages
+### Phase 5: AWS Infrastructure
+- [ ] **18-s3-bucket** - Create S3 bucket for static hosting
+- [ ] **19-cloudfront** - CloudFront distribution with SSL certificate
+- [ ] **20-api-gateway** - API Gateway configuration with CORS
+- [ ] **21-route53** - DNS setup for ghost.jurigregg.com subdomain
+- [ ] **22-deploy-lambdas** - Deploy Lambda functions
 
-### Phase 6: Deployment
-- [ ] **20-aws-config** - Configure AWS for ghost.jurigregg.com subdomain
-- [ ] **21-env-setup** - Production environment variables
-- [ ] **22-deploy** - Deploy to production
-- [ ] **23-verify** - Verify live site works correctly
+### Phase 6: Integration & Deploy
+- [ ] **23-api-client** - Frontend API client for Lambda endpoints
+- [ ] **24-full-flow** - Connect form → Lambda API → display
+- [ ] **25-build-deploy** - Build static site and deploy to S3
+- [ ] **26-verify-live** - Verify ghost.jurigregg.com works
 
 ## Completed Tasks
 - [x] **00-context-engineering** - Created foundational docs and commands

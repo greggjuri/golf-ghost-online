@@ -91,9 +91,19 @@ net_score = gross_score - strokes_received
 - Run `npm test` before committing
 
 ## AWS/Infrastructure
-- DynamoDB for course data persistence
-- Deploy via existing AWS infrastructure
-- Subdomain: ghost.jurigregg.com
+Existing AWS infrastructure includes EC2 (landing page), DynamoDB, API Gateway, Lambda, and S3.
+
+**Golf Ghost deployment:**
+- **Frontend**: S3 bucket + CloudFront CDN (static Next.js export)
+- **API**: API Gateway + Lambda functions
+- **Database**: DynamoDB table for courses
+- **Domain**: ghost.jurigregg.com (Route53 subdomain)
+
+**Key configurations:**
+- Next.js must be configured for static export (`output: 'export'` in next.config.js)
+- No `/app/api/` routes - all API via Lambda
+- CORS must be configured on API Gateway
+- Scoring logic shared between frontend (client-side preview) and Lambda (official generation)
 
 ## Custom Commands
 - `/generate-prp INITIAL/[feature].md` - Generate implementation blueprint

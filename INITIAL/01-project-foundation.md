@@ -10,6 +10,14 @@ Set up the Next.js 14 project with TypeScript, Tailwind CSS, and the full contex
 - Enable TypeScript strict mode
 - Configure Tailwind CSS
 - Set up path aliases (`@/` for `src/`)
+- Configure for static export (for S3 deployment):
+  ```javascript
+  // next.config.js
+  const nextConfig = {
+    output: 'export',
+    images: { unoptimized: true },  // Required for static export
+  }
+  ```
 
 ### 2. Directory Structure
 Create the full project structure as defined in `docs/PLANNING.md`:
@@ -18,16 +26,22 @@ src/
 ├── app/
 │   ├── page.tsx           # Home page (placeholder with glass styling)
 │   ├── layout.tsx         # Root layout with dark theme
-│   ├── globals.css        # Global styles + Tailwind + CSS variables
-│   └── api/               # API routes folder (empty for now)
+│   └── globals.css        # Global styles + Tailwind + CSS variables
 ├── components/            # React components (empty for now)
 ├── lib/
 │   ├── scoring/          # Scoring algorithm (empty for now)
-│   └── utils/            # Utility functions
+│   ├── utils/            # Utility functions
+│   └── api/              # API client for Lambda endpoints (empty for now)
 ├── types/
 │   └── index.ts          # TypeScript interfaces from Python app
 └── hooks/                 # Custom React hooks (empty for now)
+
+lambda/                    # Lambda functions (empty for now, future phase)
+infra/                     # AWS infrastructure (empty for now, future phase)
+scripts/                   # Build/deploy scripts (empty for now)
 ```
+
+Note: No `app/api/` directory - all API endpoints will be AWS Lambda functions.
 
 ### 3. TypeScript Configuration
 - Strict mode enabled

@@ -1,74 +1,359 @@
-# Golf Ghost Online - Task Tracker
+# Golf Ghost Online - Architecture Planning
 
-## Current Phase
-**Phase 1: Foundation**
+## Project Summary
+Convert the local Python Golf Ghost app (`/old` folder) into a web application at ghost.jurigregg.com. The app generates realistic golf scores based on a player's GHIN handicap index using statistical modeling that matches real-world handicap performance.
 
-## Active Task
-`01-project-foundation` - Set up Next.js project with TypeScript, Tailwind, and context engineering structure
+## Original App Analysis
+The Python app (`/old`) consists of:
+- `ghost_golfer.py` - Core scoring algorithm (PORT THIS EXACTLY)
+- `course_manager.py` - Course data CRUD operations
+- `ui_theme.py` - Dark analytics theme colors
+- `golf_courses.json` - Sample course data structure
+- `main.py`, `generate_tab.py`, `manage_tab.py` - Tkinter UI (reference for features)
 
-## Task Status
+## Tech Stack
+
+### Frontend
+- **Framework**: Next.js 14 (App Router) with static export
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS
+- **Design System**: Glass-morphism from jurigregg.com (`/examples/`)
+
+### Backend
+- **API**: AWS API Gateway + Lambda functions
+- **Database**: AWS DynamoDB (existing infrastructure)
+- **Validation**: Zod schemas
+
+### Infrastructure (Existing AWS Setup)
+- **Static Hosting**: S3 bucket + CloudFront CDN
+- **API**: API Gateway → Lambda
+- **Database**: DynamoDB (already exists from other project)
+- **Domain**: ghost.jurigregg.com (subdomain of jurigregg.com on EC2)
+- **SSL**: AWS Certificate Manager via CloudFront
+
+### Deployment Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     ghost.jurigregg.com                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│   ┌──────────────┐      ┌──────────────┐                    │
+│   │  CloudFront  │──────│  S3 Bucket   │                    │
+│   │    (CDN)     │      │ (static app) │                    │
+│   └──────┬───────┘      └──────────────┘                    │
+│          │                                                   │
+│          │ /api/*                                            │
+│          ▼                                                   │
+│   ┌──────────────┐      ┌──────────────┐                    │
+│   │ API Gateway  │──────│   Lambda     │                    │
+│   │              │      │  Functions   │                    │
+│   └──────────────┘      └──────┬───────┘                    │
+│                                │                             │
+│                                ▼                             │
+│                         ┌──────────────┐                    │
+│                         │  DynamoDB    │                    │
+│                         │  (courses)   │                    │
+│                         └──────────────┘                    │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Core Features
+
+### 1. Score Generation Engine (Priority: CRITICAL)
+Direct port of `/old/ghost_golfer.py`. Must produce identical results.
+
+**Inputs** (from Python `__init__`):
+- `handicap_index`: float (0.0 to 54.0) - Player's GHIN index
+- `course_rating`: float (typically 67-77) - Course difficulty rating
+- `slope_rating`: int (55-155, standard 113) - Course slope
+- `par_values`: int[18] - Par for each hole
+- `hole_handicaps`: int[18] - Difficulty ranking 1-18 (1=hardest)
+
+**Algorithm** (from Python `generate_round`):
+
+```typescript
+// Step 1: Calculate Course Handicap
+courseHandicap = Math.round((handicapIndex * slopeRating) / 113);
+
+// Step 2: Round-level variance (Gaussian)
+roundAdjustment = gaussianRandom(0, 1.2);
+
+// Step 3: For each hole
+for (let i = 0; i < 18; i++) {
+  const par = parValues[i];
+  const holeHcp = holeHandicaps[i];
+  
+  // Stroke allocation
+  let strokesReceived = holeHcp <= courseHandicap ? 1 : 0;
+  if (courseHandicap > 18 && holeHcp <= (courseHandicap - 18)) {
+    strokesReceived = 2;
+  }
+  
+  // Base expected score
+  const baseScore = par + (courseHandicap / 18);
+  
+  // Per-hole randomness (Gaussian)
+  const holeRandomness = gaussianRandom(0, 1.1);
+  
+  // Difficulty adjustment
+  let difficultyFactor = 0;
+  if (holeHcp <= 6) difficultyFactor = 0.3;      // Hard holes
+  else if (holeHcp >= 13) difficultyFactor = -0.2; // Easy holes
+  
+  // Calculate raw score
+  const rawScore = baseScore + (roundAdjustment / 18) + holeRandomness + difficultyFactor;
+  
+  // Clamp to realistic range (eagle to triple bogey+)
+  const grossScore = Math.max(par - 1, Math.min(par + 6, Math.round(rawScore)));
+  const netScore = grossScore - strokesReceived;
+}
+```
+
+**Outputs**:
+- Per-hole: gross score, net score, strokes received
+- Round totals: gross total, net total, course handicap
+
+### 2. User Interface
+Matching jurigregg.com aesthetic with features from original app:
+
+**Generate Tab** (from `generate_tab.py`):
+- Course selector dropdown
+- GHIN handicap input
+- Course info display (rating, slope, par, yards)
+- Generate button
+- Stats cards (gross score, net score, course handicap)
+- Scorecard table with color-coded scores
+
+**Score Colors** (from `ui_theme.py`):
+- Eagle or better: #10b981 (green)
+- Birdie: #22d3ee (cyan)
+- Par: #64748b (gray)
+- Bogey: #f59e0b (orange)
+- Double bogey: #f97316 (deep orange)
+- Triple+: #ef4444 (red)
+
+### 3. Course Management
+Port of `course_manager.py` and `manage_tab.py`:
+- List saved courses
+- Add new course with full hole data
+- Edit existing courses
+- Delete courses
+- Validation for 18-hole data
+
+## Data Models
+
+### CourseData (from `golf_courses.json`)
+```typescript
+interface CourseData {
+  tee_name: string;           // "Blue", "White", "Red"
+  course_rating: number;      // e.g., 69.7
+  slope_rating: number;       // e.g., 126
+  par_values: number[];       // 18 integers, e.g., [4, 3, 4, 3, 5, 4, 4, 4, 4, ...]
+  hole_handicaps: number[];   // 18 integers (1-18), e.g., [3, 17, 15, 7, 9, ...]
+  yardages: number[];         // 18 integers, e.g., [349, 154, 308, ...]
+}
+```
+
+### ScoreInput
+```typescript
+interface ScoreInput {
+  handicapIndex: number;      // 0.0 to 54.0
+  courseRating: number;       // typically 67-77
+  slopeRating: number;        // 55-155, standard 113
+  parValues: number[];        // 18 par values
+  holeHandicaps: number[];    // 18 handicap rankings (1-18)
+}
+```
+
+### HoleScore
+```typescript
+interface HoleScore {
+  hole: number;               // 1-18
+  par: number;                // 3, 4, or 5
+  grossScore: number;         // Actual strokes
+  strokesReceived: number;    // 0, 1, or 2
+  netScore: number;           // grossScore - strokesReceived
+}
+```
+
+### GeneratedRound
+```typescript
+interface GeneratedRound {
+  id: string;
+  scores: HoleScore[];
+  courseHandicap: number;
+  totalGross: number;
+  totalNet: number;
+  totalPar: number;
+  createdAt: Date;
+}
+```
+
+## API Routes
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/generate` | POST | Generate a ghost round |
+| `/api/courses` | GET | List all courses |
+| `/api/courses` | POST | Add a new course |
+| `/api/courses/[id]` | GET | Get course by ID |
+| `/api/courses/[id]` | PUT | Update course |
+| `/api/courses/[id]` | DELETE | Delete course |
+
+## Styling Requirements
+
+### From `/examples/` (jurigregg.com)
+- Glass-morphism effect on buttons and cards
+- Color palette and gradients
+- Font choices
+- Background styling
+
+### From `/old/ui_theme.py`
+```css
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --border: #334155;
+}
+```
+
+## Directory Structure
+```
+golf-ghost-online/
+├── src/                            # Next.js frontend
+│   ├── app/
+│   │   ├── page.tsx               # Home page with generator
+│   │   ├── layout.tsx             # Root layout
+│   │   └── globals.css            # Global styles + Tailwind
+│   ├── components/
+│   │   ├── ScoreForm.tsx          # Handicap/course input
+│   │   ├── ScoreCard.tsx          # Display generated scores
+│   │   ├── CourseSelector.tsx     # Course dropdown
+│   │   ├── StatsCard.tsx          # Gross/net/handicap display
+│   │   ├── GlassButton.tsx        # Reusable glass button
+│   │   └── GlassCard.tsx          # Reusable glass card
+│   ├── lib/
+│   │   ├── scoring/               # Scoring algorithm (shared with Lambda)
+│   │   │   ├── handicap.ts
+│   │   │   ├── distribution.ts
+│   │   │   ├── generator.ts
+│   │   │   └── index.ts
+│   │   ├── utils/
+│   │   │   └── colors.ts
+│   │   └── api/
+│   │       └── client.ts          # API client for Lambda endpoints
+│   ├── types/
+│   │   └── index.ts
+│   └── hooks/
+│       └── useScoreGeneration.ts
+├── lambda/                         # AWS Lambda functions
+│   ├── generate-score/
+│   │   └── index.ts               # Score generation handler
+│   ├── get-courses/
+│   │   └── index.ts               # List courses handler
+│   ├── create-course/
+│   │   └── index.ts               # Create course handler
+│   ├── delete-course/
+│   │   └── index.ts               # Delete course handler
+│   └── shared/                    # Shared Lambda code
+│       ├── scoring/               # Symlink or copy of src/lib/scoring
+│       └── db.ts                  # DynamoDB operations
+├── infra/                          # AWS Infrastructure
+│   ├── template.yaml              # SAM template (or CDK)
+│   └── deploy.sh                  # Deployment script
+├── scripts/
+│   ├── build.sh                   # Build static site
+│   ├── deploy-site.sh             # Deploy to S3
+│   └── deploy-lambda.sh           # Deploy Lambda functions
+├── docs/
+│   ├── PLANNING.md
+│   ├── TASK.md
+│   └── DECISIONS.md
+├── INITIAL/
+├── PRPs/
+├── examples/                       # jurigregg.com styling
+├── old/                            # Original Python app
+├── CLAUDE.md
+├── HANDOFF.md
+└── next.config.js                  # Configure static export
+```
+
+## Implementation Phases
 
 ### Phase 1: Foundation
-- [x] **00-context-engineering** - Set up CLAUDE.md, docs/, INITIAL/, PRPs/, commands
-- [ ] **01-project-foundation** - Initialize Next.js 14 with TypeScript, Tailwind, project structure
-- [ ] **02-glass-components** - Create GlassButton and GlassCard components from `/examples/`
-- [ ] **03-layout-styling** - Root layout with dark theme, header like Python app
+- [x] Context engineering setup (CLAUDE.md, docs/, INITIAL/, PRPs/)
+- [ ] Next.js 14 project initialization
+- [ ] TypeScript strict mode configuration
+- [ ] Tailwind CSS with custom theme
+- [ ] Basic layout with glass styling
+- [ ] Configure for static export (`output: 'export'`)
 
-### Phase 2: Scoring Engine (CRITICAL)
-- [ ] **04-scoring-types** - TypeScript interfaces matching Python data structures
-- [ ] **05-gaussian-random** - Implement Gaussian random number generator
-- [ ] **06-handicap-calc** - Port course handicap and stroke allocation logic
-- [ ] **07-score-generator** - Port full GhostGolfer class from Python
-- [ ] **08-scoring-tests** - Unit tests validating against Python implementation
+### Phase 2: Scoring Engine
+- [ ] Port `ghost_golfer.py` to TypeScript
+- [ ] Gaussian random number generator
+- [ ] Course handicap calculation
+- [ ] Score generation with proper distribution
+- [ ] Comprehensive unit tests
+- [ ] Validate against Python implementation
 
 ### Phase 3: UI Components
-- [ ] **09-score-form** - Input form for handicap, course rating, slope, par values
-- [ ] **10-scorecard-display** - Scorecard table with color-coded scores (like Python UI)
-- [ ] **11-stats-cards** - Gross score, net score, course handicap display cards
-- [ ] **12-course-selector** - Dropdown for selecting saved courses
+- [ ] GlassButton and GlassCard components
+- [ ] ScoreForm with course/handicap inputs
+- [ ] ScoreCard with color-coded holes
+- [ ] StatsCard for totals display
+- [ ] Mobile responsive layout
 
-### Phase 4: API & Data
-- [ ] **13-generate-api** - POST `/api/generate` endpoint for score generation
-- [ ] **14-courses-api** - CRUD endpoints for courses
-- [ ] **15-dynamodb-setup** - DynamoDB table and connection
-- [ ] **16-seed-courses** - Seed Baytree courses from `golf_courses.json`
+### Phase 4: Lambda Functions
+- [ ] `generate-score` Lambda - score generation endpoint
+- [ ] `get-courses` Lambda - list courses
+- [ ] `create-course` Lambda - add new course
+- [ ] `delete-course` Lambda - remove course
+- [ ] Shared layer for scoring logic
 
-### Phase 5: Integration
-- [ ] **17-full-flow** - Connect form → API → display
-- [ ] **18-mobile-responsive** - Ensure mobile-friendly layout
-- [ ] **19-error-handling** - User-friendly error messages
+### Phase 5: AWS Infrastructure
+- [ ] S3 bucket for static site hosting
+- [ ] CloudFront distribution with SSL
+- [ ] API Gateway configuration
+- [ ] Lambda function deployments
+- [ ] DynamoDB table for courses (or use existing)
+- [ ] Route53 subdomain setup (ghost.jurigregg.com)
 
-### Phase 6: Deployment
-- [ ] **20-aws-config** - Configure AWS for ghost.jurigregg.com subdomain
-- [ ] **21-env-setup** - Production environment variables
-- [ ] **22-deploy** - Deploy to production
-- [ ] **23-verify** - Verify live site works correctly
+### Phase 6: Deployment & CI/CD
+- [ ] Build script for static export
+- [ ] S3 sync deployment script
+- [ ] Lambda deployment (SAM or CDK)
+- [ ] GitHub Actions for auto-deploy
+- [ ] Verify live site works correctly
 
-## Completed Tasks
-- [x] **00-context-engineering** - Created foundational docs and commands
+## Testing Strategy
 
-## Blockers
-None currently
+### Unit Tests (CRITICAL for scoring)
+- Course handicap calculation matches Python
+- Stroke allocation logic
+- Score bounds (par-1 to par+6)
+- Gaussian distribution properties
+- Net score calculation
 
-## Notes
-- Python app source in `/old` folder - reference for ALL implementations
-- Styling examples in `/examples` folder - reference for glass effects
-- Scoring algorithm is CRITICAL - must match Python exactly
-- Using context engineering workflow: Claude.ai plans, Claude Code implements
-- Commit and push after every completed feature
+### Integration Tests
+- API endpoint responses
+- Course CRUD operations
+- End-to-end score generation
 
-## Quick Reference
+### Manual Testing
+- Visual comparison with Python app
+- Score distribution feels realistic
+- Mobile responsiveness
 
-### Key Files to Port
-| Python File | TypeScript Location | Purpose |
-|------------|---------------------|---------|
-| `ghost_golfer.py` | `src/lib/scoring/generator.ts` | Core algorithm |
-| `ui_theme.py` | `tailwind.config.ts` + `globals.css` | Colors |
-| `golf_courses.json` | Seed data for DynamoDB | Sample courses |
-| `course_manager.py` | `src/lib/db/courses.ts` | Course CRUD |
-
-### Color Reference (from ui_theme.py)
-- Background: `#0f172a` (primary), `#1e293b` (secondary/card)
-- Accent: `#3b82f6` (blue), `#06b6d4` (cyan), `#10b981` (green)
-- Text: `#f8fafc` (primary), `#64748b` (muted)
-- Scores: green→cyan→gray→orange→deep orange→red
+## Open Questions
+- [x] ~~What data persistence is needed?~~ → DynamoDB for courses
+- [ ] User accounts needed? Or anonymous usage?
+- [ ] Should we pre-load popular courses?
+- [ ] Save generated rounds history?

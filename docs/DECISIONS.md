@@ -103,6 +103,38 @@
 - Easy validation (length === 18)
 - Direct index mapping: `holes[i]` for hole i+1
 
+### DEC-010: S3 + CloudFront Static Hosting
+**Date**: 2025-01-XX
+**Status**: Decided
+**Context**: How to host the Next.js frontend
+**Decision**: Use Next.js static export to S3, served via CloudFront
+**Rationale**:
+- Matches existing infrastructure (other projects use S3)
+- No server management needed
+- CloudFront provides SSL and CDN
+- Cost-effective (pay per request)
+- Easy deployment (sync to S3)
+**Alternatives Considered**:
+- EC2: More complex, overkill for static site
+- Vercel: Would require separate account/billing
+- Amplify: More abstraction than needed
+
+### DEC-011: API Gateway + Lambda for Backend
+**Date**: 2025-01-XX
+**Status**: Decided
+**Context**: How to implement API endpoints
+**Decision**: Use API Gateway with Lambda functions instead of Next.js API routes
+**Rationale**:
+- Matches existing infrastructure pattern
+- Serverless, scales automatically
+- Can share DynamoDB with other projects
+- Lambda cold starts acceptable for this use case
+- Scoring logic can be shared between frontend and Lambda
+**Consequences**:
+- Need to configure CORS on API Gateway
+- Separate deployment for Lambda vs frontend
+- API client needed in frontend code
+
 ## Pending Decisions
 
 ### DEC-010: User Authentication

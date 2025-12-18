@@ -78,11 +78,13 @@ The scoring engine implements USGA handicap principles with statistical modeling
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), React 18
+- **Frontend**: Next.js 14 (App Router), React 18, static export
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS with glass-morphism effects
-- **Database**: AWS DynamoDB (for course storage)
-- **Hosting**: AWS
+- **API**: AWS API Gateway + Lambda
+- **Database**: AWS DynamoDB
+- **Hosting**: S3 + CloudFront CDN
+- **Domain**: Route53
 
 ## Getting Started
 
@@ -116,11 +118,17 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ```bash
 # .env.local
+
+# API Gateway endpoint (after Lambda deployment)
+NEXT_PUBLIC_API_URL=https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod
+
+# App URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# For local development with AWS (optional)
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=your_key
 AWS_SECRET_ACCESS_KEY=your_secret
-
-NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ## Project Structure
@@ -131,18 +139,25 @@ golf-ghost-online/
 │   ├── app/                    # Next.js App Router
 │   │   ├── page.tsx           # Home page
 │   │   ├── layout.tsx         # Root layout
-│   │   └── api/               # API routes
+│   │   └── globals.css        # Global styles
 │   ├── components/            # React components
 │   │   ├── GlassButton.tsx
 │   │   ├── GlassCard.tsx
 │   │   ├── ScoreForm.tsx
 │   │   └── ScoreCard.tsx
 │   ├── lib/
-│   │   └── scoring/           # Scoring algorithm
-│   │       ├── generator.ts   # Main GhostGolfer class
-│   │       ├── handicap.ts    # Handicap calculations
-│   │       └── distribution.ts # Gaussian random
+│   │   ├── scoring/           # Scoring algorithm
+│   │   │   ├── generator.ts   # Main GhostGolfer class
+│   │   │   ├── handicap.ts    # Handicap calculations
+│   │   │   └── distribution.ts # Gaussian random
+│   │   └── api/
+│   │       └── client.ts      # Lambda API client
 │   └── types/                 # TypeScript interfaces
+├── lambda/                    # AWS Lambda functions
+│   ├── generate-score/
+│   ├── get-courses/
+│   └── shared/               # Shared code (scoring, db)
+├── infra/                     # AWS infrastructure (SAM/CDK)
 ├── docs/                      # Architecture docs
 ├── old/                       # Original Python app
 ├── examples/                  # Styling references
@@ -190,7 +205,7 @@ See [HANDOFF.md](./HANDOFF.md) for the full workflow.
 ### Generate Score
 
 ```http
-POST /api/generate
+POST https://api.ghost.jurigregg.com/generate
 Content-Type: application/json
 
 {
@@ -219,6 +234,31 @@ Content-Type: application/json
       "netScore": 4
     }
   ]
+}
+```
+
+### Get Courses
+
+```http
+GET https://api.ghost.jurigregg.com/courses
+```
+
+### Create Course
+
+```http
+POST https://api.ghost.jurigregg.com/courses
+Content-Type: application/json
+
+{
+  "name": "My Course (Blue)",
+  "data": {
+    "tee_name": "Blue",
+    "course_rating": 72.3,
+    "slope_rating": 130,
+    "par_values": [...],
+    "hole_handicaps": [...],
+    "yardages": [...]
+  }
 }
 ```
 
