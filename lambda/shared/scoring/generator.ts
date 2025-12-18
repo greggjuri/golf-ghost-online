@@ -50,9 +50,13 @@ export class GhostGolfer {
     this.slopeRating = validated.slopeRating;
     this.parValues = validated.parValues;
     this.holeHandicaps = validated.holeHandicaps;
+
+    const totalPar = this.parValues.reduce((sum, p) => sum + p, 0);
     this.courseHandicap = calculateCourseHandicap(
       this.handicapIndex,
-      this.slopeRating
+      this.slopeRating,
+      this.courseRating,
+      totalPar
     );
   }
 

@@ -1,19 +1,24 @@
 /**
- * Calculate course handicap from handicap index and slope rating.
+ * Calculate course handicap from handicap index, slope rating, course rating, and par.
  *
- * Formula: round((handicapIndex * slopeRating) / 113)
+ * USGA Formula: round((handicapIndex * slopeRating / 113) + (courseRating - par))
  *
  * 113 is the standard slope rating (USGA constant).
+ * The (courseRating - par) adjustment accounts for course difficulty relative to par.
  *
  * @param handicapIndex - Player's GHIN handicap index (0.0 to 54.0)
  * @param slopeRating - Course slope rating (55 to 155, standard 113)
+ * @param courseRating - Course rating (typically 67-77)
+ * @param par - Total par for the course (typically 72)
  * @returns Course handicap (integer)
  */
 export function calculateCourseHandicap(
   handicapIndex: number,
-  slopeRating: number
+  slopeRating: number,
+  courseRating: number,
+  par: number
 ): number {
-  return Math.round((handicapIndex * slopeRating) / 113);
+  return Math.round((handicapIndex * slopeRating) / 113 + (courseRating - par));
 }
 
 /**

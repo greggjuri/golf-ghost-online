@@ -13,8 +13,9 @@ describe('GhostGolfer', () => {
   describe('constructor', () => {
     it('should calculate correct course handicap', () => {
       const golfer = new GhostGolfer(validConfig);
-      // Course handicap = round((15 * 130) / 113) = round(17.26) = 17
-      expect(golfer.courseHandicap).toBe(17);
+      // USGA formula: round((15 * 130) / 113 + (72 - 71)) = round(17.26 + 1) = 18
+      // courseRating=72, parValues sum=71, so +1 adjustment
+      expect(golfer.courseHandicap).toBe(18);
     });
 
     it('should store config values correctly', () => {
@@ -116,7 +117,7 @@ describe('GhostGolfer', () => {
     it('should include course handicap in result', () => {
       const golfer = new GhostGolfer(validConfig);
       const round = golfer.generateRound();
-      expect(round.courseHandicap).toBe(17);
+      expect(round.courseHandicap).toBe(18);
     });
 
     it('should include creation timestamp', () => {
@@ -170,7 +171,7 @@ describe('generateRound convenience function', () => {
   it('should generate a complete round', () => {
     const round = generateRound(validConfig);
     expect(round.scores.length).toBe(18);
-    expect(round.courseHandicap).toBe(17);
+    expect(round.courseHandicap).toBe(18);
     expect(typeof round.totalGross).toBe('number');
     expect(typeof round.totalNet).toBe('number');
     expect(typeof round.totalPar).toBe('number');
