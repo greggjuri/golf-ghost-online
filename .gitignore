@@ -70,9 +70,8 @@ ehthumbs.db
 # Sentry
 .sentryclirc
 
-# Generated PRPs (keep templates)
-PRPs/*.md
-!PRPs/templates/
+# Keep PRP files (they are part of the project documentation)
+# PRPs/*.md
 
 # Keep example files but ignore user modifications
 # examples/

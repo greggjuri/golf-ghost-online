@@ -4,13 +4,13 @@
 **Phase 1: Foundation**
 
 ## Active Task
-`01-project-foundation` - Set up Next.js project with TypeScript, Tailwind, and context engineering structure
+`02-glass-components` - Create GlassButton and GlassCard components from `/examples/`
 
 ## Task Status
 
 ### Phase 1: Foundation
 - [x] **00-context-engineering** - Set up CLAUDE.md, docs/, INITIAL/, PRPs/, commands
-- [ ] **01-project-foundation** - Initialize Next.js 14 with TypeScript, Tailwind, project structure
+- [x] **01-project-foundation** - Initialize Next.js 14 with TypeScript, Tailwind, project structure
 - [ ] **02-glass-components** - Create GlassButton and GlassCard components from `/examples/`
 - [ ] **03-layout-styling** - Root layout with dark theme, header like Python app
 
@@ -49,6 +49,7 @@
 
 ## Completed Tasks
 - [x] **00-context-engineering** - Created foundational docs and commands
+- [x] **01-project-foundation** - Next.js 14 with TypeScript, Tailwind, project structure, types, home page
 
 ## Blockers
 None currently
