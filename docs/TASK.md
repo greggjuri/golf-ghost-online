@@ -1,10 +1,10 @@
 # Golf Ghost Online - Task Tracker
 
 ## Current Phase
-**Phase 5: AWS Infrastructure**
+**Phase 6: Integration & Deploy**
 
 ## Active Task
-`18-s3-bucket` - Create S3 bucket for static hosting
+`23-api-client` - Frontend API client for Lambda endpoints
 
 ## Task Status
 
@@ -35,11 +35,15 @@
 - [x] **17-seed-courses** - Seed Baytree courses from `golf_courses.json`
 
 ### Phase 5: AWS Infrastructure
-- [ ] **18-s3-bucket** - Create S3 bucket for static hosting
-- [ ] **19-cloudfront** - CloudFront distribution with SSL certificate
-- [ ] **20-api-gateway** - API Gateway configuration with CORS
-- [ ] **21-route53** - DNS setup for ghost.jurigregg.com subdomain
-- [ ] **22-deploy-lambdas** - Deploy Lambda functions
+- [x] **18-22-deploy-infrastructure** - Deployment scripts for all AWS infrastructure (PRP-13):
+  - scripts/setup-s3-policy.sh: S3 bucket policy for CloudFront OAC
+  - scripts/setup-cloudfront-errors.sh: SPA routing with 404 -> index.html
+  - scripts/deploy-lambdas.sh: Build and deploy all Lambda functions
+  - scripts/setup-api-gateway.sh: HTTP API with routes and CORS
+  - scripts/setup-dns.sh: Route53 alias for ghost.jurigregg.com
+  - scripts/deploy-site.sh: Build Next.js and sync to S3
+  - scripts/deploy-all.sh: Master deployment script
+  - npm scripts: deploy, deploy:infra, deploy:lambdas
 
 ### Phase 6: Integration & Deploy
 - [ ] **23-api-client** - Frontend API client for Lambda endpoints
@@ -84,6 +88,11 @@
   - tsx dev dependency for running TypeScript scripts
   - Fixed par values in presets.ts (hole 8: par 8 → par 4)
   - User runs `aws dynamodb create-table` manually (documented)
+- [x] **18-22-deploy-infrastructure** - Deployment scripts for AWS (PRP-13):
+  - 7 shell scripts for S3, CloudFront, Lambda, API Gateway, Route53, deploy
+  - Master script `deploy-all.sh` runs all infrastructure setup
+  - npm scripts: `deploy`, `deploy:infra`, `deploy:lambdas`
+  - User executes scripts manually with AWS CLI configured
 
 ## Blockers
 None currently

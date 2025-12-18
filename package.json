@@ -9,7 +9,10 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "deploy": "bash scripts/deploy-site.sh",
+    "deploy:infra": "bash scripts/deploy-all.sh",
+    "deploy:lambdas": "bash scripts/deploy-lambdas.sh"
   },
   "dependencies": {
     "next": "14.2.35",
