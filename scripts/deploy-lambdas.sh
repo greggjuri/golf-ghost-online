@@ -1,6 +1,6 @@
 #!/bin/bash
 # scripts/deploy-lambdas.sh
-# Build and deploy Lambda functions
+# Build and deploy Lambda functions using esbuild bundling
 set -e
 
 REGION="us-east-1"
@@ -8,12 +8,12 @@ ACCOUNT_ID="490004610151"
 ROLE_NAME="golf-ghost-lambda-role"
 TABLE_NAME="golf-ghost-courses"
 
-# Function name : source directory mapping
+# Function name : source file path mapping
 FUNCTIONS=(
-  "golf-ghost-generate-score:generate-score"
-  "golf-ghost-get-courses:get-courses"
-  "golf-ghost-create-course:create-course"
-  "golf-ghost-delete-course:delete-course"
+  "golf-ghost-generate-score:generate-score/index.ts"
+  "golf-ghost-get-courses:get-courses/index.ts"
+  "golf-ghost-create-course:create-course/index.ts"
+  "golf-ghost-delete-course:delete-course/index.ts"
 )
 
 echo "=== Golf Ghost Lambda Deployment ==="
@@ -60,21 +60,20 @@ fi
 ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME}"
 echo "IAM role ready: $ROLE_ARN"
 
-# Step 2: Build Lambda code
+# Step 2: Install dependencies
 echo ""
-echo "[2/4] Building Lambda code..."
+echo "[2/4] Installing dependencies..."
 cd "$PROJECT_ROOT/lambda"
 npm install
-npm run build
 cd "$PROJECT_ROOT"
 
-# Step 3: Package and deploy each function
+# Step 3: Bundle and deploy each function using esbuild
 echo ""
-echo "[3/4] Packaging and deploying functions..."
+echo "[3/4] Bundling and deploying functions..."
 
 for func_pair in "${FUNCTIONS[@]}"; do
   FUNC_NAME="${func_pair%%:*}"
-  FUNC_DIR="${func_pair##*:}"
+  FUNC_SRC="${func_pair##*:}"
 
   echo ""
   echo "  Deploying $FUNC_NAME..."
@@ -83,22 +82,19 @@ for func_pair in "${FUNCTIONS[@]}"; do
   rm -rf /tmp/lambda-package
   mkdir -p /tmp/lambda-package
 
-  # Copy the compiled handler
-  # The tsconfig outputs to dist/ with the same structure
-  cp "$PROJECT_ROOT/lambda/dist/$FUNC_DIR/index.js" /tmp/lambda-package/
-
-  # Copy shared modules (preserving directory structure)
-  cp -r "$PROJECT_ROOT/lambda/dist/shared" /tmp/lambda-package/
-
-  # Create package.json with "type": "module" for ESM support
-  cat > /tmp/lambda-package/package.json << 'EOF'
-{
-  "type": "module"
-}
-EOF
-
-  # Copy node_modules (production dependencies)
-  cp -r "$PROJECT_ROOT/lambda/node_modules" /tmp/lambda-package/
+  # Bundle with esbuild
+  # - ESM format for Node 20
+  # - External AWS SDK (provided by Lambda runtime)
+  # - Bundle all other dependencies
+  echo "    Bundling with esbuild..."
+  "$PROJECT_ROOT/lambda/node_modules/.bin/esbuild" \
+    "$PROJECT_ROOT/lambda/$FUNC_SRC" \
+    --bundle \
+    --platform=node \
+    --target=node20 \
+    --format=esm \
+    --external:@aws-sdk/* \
+    --outfile=/tmp/lambda-package/index.mjs
 
   # Create zip package
   cd /tmp/lambda-package
@@ -120,6 +116,7 @@ EOF
     # Update configuration
     aws lambda update-function-configuration \
       --function-name $FUNC_NAME \
+      --handler index.handler \
       --environment "Variables={COURSES_TABLE=$TABLE_NAME}" \
       --region $REGION > /dev/null 2>&1 || true
   else

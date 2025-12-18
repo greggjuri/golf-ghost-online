@@ -17,6 +17,7 @@
     "@types/aws-lambda": "^8.10.147",
     "@types/node": "^20.17.10",
     "@types/uuid": "^10.0.0",
+    "esbuild": "^0.24.0",
     "tsx": "^4.21.0",
     "typescript": "^5.7.2"
   }
