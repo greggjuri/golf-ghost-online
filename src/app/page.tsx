@@ -7,7 +7,7 @@ import { useScoreGeneration } from '@/hooks/useScoreGeneration';
 import { getTotalPar } from '@/lib/courses/presets';
 
 export default function Home() {
-  const { round, course, isGenerating, generate } = useScoreGeneration();
+  const { round, course, isGenerating, error, generate } = useScoreGeneration();
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -32,7 +32,7 @@ export default function Home() {
           {/* Left Column - Form */}
           <div className="lg:col-span-4">
             <div className="lg:sticky lg:top-8">
-              <ScoreForm onGenerate={generate} isGenerating={isGenerating} />
+              <ScoreForm onGenerate={generate} isGenerating={isGenerating} apiError={error} />
             </div>
           </div>
 

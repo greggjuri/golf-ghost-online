@@ -5,17 +5,17 @@ import { CourseSelector } from './CourseSelector';
 import { GlassButton } from './GlassButton';
 import { GlassCard } from './GlassCard';
 import { PresetCourse, getTotalPar, getTotalYardage, PRESET_COURSES } from '@/lib/courses/presets';
-import { GhostGolferConfig } from '@/lib/scoring';
 
 interface ScoreFormProps {
-  onGenerate: (config: GhostGolferConfig, course: PresetCourse) => void;
+  onGenerate: (handicapIndex: number, course: PresetCourse) => Promise<void>;
   isGenerating: boolean;
+  apiError?: string | null;
 }
 
 /**
  * Score generation form with course selection and handicap input
  */
-export function ScoreForm({ onGenerate, isGenerating }: ScoreFormProps) {
+export function ScoreForm({ onGenerate, isGenerating, apiError }: ScoreFormProps) {
   const [selectedCourse, setSelectedCourse] = useState<PresetCourse | null>(null);
   const [handicapIndex, setHandicapIndex] = useState<string>('15.0');
   const [error, setError] = useState<string | null>(null);
@@ -43,15 +43,7 @@ export function ScoreForm({ onGenerate, isGenerating }: ScoreFormProps) {
       return;
     }
 
-    const config: GhostGolferConfig = {
-      handicapIndex: handicap,
-      courseRating: selectedCourse.courseRating,
-      slopeRating: selectedCourse.slopeRating,
-      parValues: selectedCourse.parValues,
-      holeHandicaps: selectedCourse.holeHandicaps,
-    };
-
-    onGenerate(config, selectedCourse);
+    onGenerate(handicap, selectedCourse);
   };
 
   return (
@@ -131,9 +123,9 @@ export function ScoreForm({ onGenerate, isGenerating }: ScoreFormProps) {
         </div>
 
         {/* Error Display */}
-        {error && (
+        {(error || apiError) && (
           <div className="bg-red-900/30 border border-red-500/50 rounded-lg px-4 py-2">
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-red-400">{error || apiError}</p>
           </div>
         )}
 

@@ -1,6 +1,8 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { PRESET_COURSES, PresetCourse, getCourseDisplayName } from '@/lib/courses/presets';
+import { getCourses, courseRecordsToPresets } from '@/lib/api';
 
 interface CourseSelectorProps {
   selectedCourseId: string | null;
@@ -8,15 +10,38 @@ interface CourseSelectorProps {
 }
 
 /**
- * Dropdown component for selecting preset golf courses
+ * Dropdown component for selecting golf courses
+ * Fetches courses from API, falls back to presets if unavailable
  */
 export function CourseSelector({ selectedCourseId, onSelect }: CourseSelectorProps) {
+  const [courses, setCourses] = useState<PresetCourse[]>(PRESET_COURSES);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch courses from API on mount
+  useEffect(() => {
+    getCourses()
+      .then((records) => {
+        const apiCourses = courseRecordsToPresets(records);
+        if (apiCourses.length > 0) {
+          setCourses(apiCourses);
+        }
+        // If no courses from API, keep the preset fallback
+      })
+      .catch((error) => {
+        console.warn('Failed to fetch courses from API, using presets:', error.message);
+        // Keep using PRESET_COURSES (already set as initial state)
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const courseId = e.target.value;
     if (courseId === '') {
       onSelect(null);
     } else {
-      const course = PRESET_COURSES.find((c) => c.id === courseId);
+      const course = courses.find((c) => c.id === courseId);
       if (course) {
         onSelect(course);
       }
@@ -35,6 +60,7 @@ export function CourseSelector({ selectedCourseId, onSelect }: CourseSelectorPro
         id="course-select"
         value={selectedCourseId || ''}
         onChange={handleChange}
+        disabled={isLoading}
         className="
           w-full
           px-4 py-3
@@ -51,14 +77,21 @@ export function CourseSelector({ selectedCourseId, onSelect }: CourseSelectorPro
           bg-[right_0.75rem_center]
           bg-[length:1.25rem_1.25rem]
           pr-10
+          disabled:opacity-50 disabled:cursor-wait
         "
       >
-        <option value="">Select a course...</option>
-        {PRESET_COURSES.map((course) => (
-          <option key={course.id} value={course.id}>
-            {getCourseDisplayName(course)}
-          </option>
-        ))}
+        {isLoading ? (
+          <option value="">Loading courses...</option>
+        ) : (
+          <>
+            <option value="">Select a course...</option>
+            {courses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {getCourseDisplayName(course)}
+              </option>
+            ))}
+          </>
+        )}
       </select>
     </div>
   );

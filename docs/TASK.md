@@ -4,7 +4,7 @@
 **Phase 6: Integration & Deploy**
 
 ## Active Task
-`23-api-client` - Frontend API client for Lambda endpoints
+`25-build-deploy` - Build static site and deploy to S3
 
 ## Task Status
 
@@ -46,8 +46,15 @@
   - npm scripts: deploy, deploy:infra, deploy:lambdas
 
 ### Phase 6: Integration & Deploy
-- [ ] **23-api-client** - Frontend API client for Lambda endpoints
-- [ ] **24-full-flow** - Connect form → Lambda API → display
+- [x] **23-24-api-integration** - Frontend API client and full flow (PRP-14):
+  - src/lib/api/types.ts: API types (CourseRecord, GenerateScoreRequest)
+  - src/lib/api/client.ts: API functions (generateScore, getCourses, etc.)
+  - src/lib/api/converters.ts: Type conversion utilities
+  - src/lib/api/index.ts: Barrel export
+  - Updated useScoreGeneration hook to use Lambda API
+  - Updated CourseSelector to fetch courses from API
+  - Fallback to preset courses if API unavailable
+  - .env.local with NEXT_PUBLIC_API_URL
 - [ ] **25-build-deploy** - Build static site and deploy to S3
 - [ ] **26-verify-live** - Verify ghost.jurigregg.com works
 
@@ -93,6 +100,11 @@
   - Master script `deploy-all.sh` runs all infrastructure setup
   - npm scripts: `deploy`, `deploy:infra`, `deploy:lambdas`
   - User executes scripts manually with AWS CLI configured
+- [x] **23-24-api-integration** - Frontend API client and integration (PRP-14):
+  - src/lib/api/: API client module with types, client, converters
+  - useScoreGeneration hook calls Lambda API for generation
+  - CourseSelector fetches courses from API with preset fallback
+  - Error handling for API failures displayed in UI
 
 ## Blockers
 None currently

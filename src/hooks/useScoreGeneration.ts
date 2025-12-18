@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { GhostGolfer, GhostGolferConfig } from '@/lib/scoring';
+import { generateScore as apiGenerateScore, GenerateScoreRequest } from '@/lib/api';
 import { GeneratedRound } from '@/types';
 import { PresetCourse } from '@/lib/courses/presets';
 
@@ -9,46 +9,56 @@ interface UseScoreGenerationReturn {
   round: GeneratedRound | null;
   course: PresetCourse | null;
   isGenerating: boolean;
-  generate: (config: GhostGolferConfig, course: PresetCourse) => void;
+  error: string | null;
+  generate: (handicapIndex: number, course: PresetCourse) => Promise<void>;
   reset: () => void;
 }
 
 /**
  * Hook to manage score generation state and logic
- * Includes a small delay for UX feel
+ * Uses the Lambda API for generation
  */
 export function useScoreGeneration(): UseScoreGenerationReturn {
   const [round, setRound] = useState<GeneratedRound | null>(null);
   const [course, setCourse] = useState<PresetCourse | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const generate = useCallback((config: GhostGolferConfig, selectedCourse: PresetCourse) => {
+  const generate = useCallback(async (handicapIndex: number, selectedCourse: PresetCourse) => {
     setIsGenerating(true);
+    setError(null);
 
-    // Small delay for UX feel (makes generation feel more substantial)
-    setTimeout(() => {
-      try {
-        const golfer = new GhostGolfer(config);
-        const generatedRound = golfer.generateRound();
-        setRound(generatedRound);
-        setCourse(selectedCourse);
-      } catch (error) {
-        console.error('Score generation failed:', error);
-      } finally {
-        setIsGenerating(false);
-      }
-    }, 300);
+    try {
+      const request: GenerateScoreRequest = {
+        handicapIndex,
+        courseRating: selectedCourse.courseRating,
+        slopeRating: selectedCourse.slopeRating,
+        parValues: selectedCourse.parValues,
+        holeHandicaps: selectedCourse.holeHandicaps,
+      };
+
+      const generatedRound = await apiGenerateScore(request);
+      setRound(generatedRound);
+      setCourse(selectedCourse);
+    } catch (err) {
+      console.error('Score generation failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate score');
+    } finally {
+      setIsGenerating(false);
+    }
   }, []);
 
   const reset = useCallback(() => {
     setRound(null);
     setCourse(null);
+    setError(null);
   }, []);
 
   return {
     round,
     course,
     isGenerating,
+    error,
     generate,
     reset,
   };
