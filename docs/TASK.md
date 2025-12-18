@@ -1,18 +1,18 @@
 # Golf Ghost Online - Task Tracker
 
 ## Current Phase
-**Phase 1: Foundation**
+**Phase 4: Lambda Functions**
 
 ## Active Task
-`02-glass-components` - Create GlassButton and GlassCard components from `/examples/`
+`13-lambda-setup` - Lambda project structure with shared scoring code
 
 ## Task Status
 
 ### Phase 1: Foundation
 - [x] **00-context-engineering** - Set up CLAUDE.md, docs/, INITIAL/, PRPs/, commands
 - [x] **01-project-foundation** - Initialize Next.js 14 with TypeScript, Tailwind, project structure
-- [ ] **02-glass-components** - Create GlassButton and GlassCard components from `/examples/`
-- [ ] **03-layout-styling** - Root layout with dark theme, header like Python app
+- [x] **02-glass-components** - Create GlassButton and GlassCard components from `/examples/`
+- [x] **03-layout-styling** - Root layout with dark theme, header like Python app
 
 ### Phase 2: Scoring Engine (CRITICAL)
 - [x] **04-scoring-types** - TypeScript interfaces matching Python data structures
@@ -22,10 +22,10 @@
 - [x] **08-scoring-tests** - Unit tests validating against Python implementation (62 tests passing)
 
 ### Phase 3: UI Components
-- [ ] **09-score-form** - Input form for handicap, course rating, slope, par values
-- [ ] **10-scorecard-display** - Scorecard table with color-coded scores (like Python UI)
-- [ ] **11-stats-cards** - Gross score, net score, course handicap display cards
-- [ ] **12-course-selector** - Dropdown for selecting saved courses
+- [x] **09-score-form** - Input form for handicap, course rating, slope, par values
+- [x] **10-scorecard-display** - Scorecard table with color-coded scores (like Python UI)
+- [x] **11-stats-cards** - Gross score, net score, course handicap display cards
+- [x] **12-course-selector** - Dropdown for selecting saved courses
 
 ### Phase 4: Lambda Functions
 - [ ] **13-lambda-setup** - Lambda project structure with shared scoring code
@@ -56,6 +56,16 @@
   - validation.ts: Zod schemas for config validation
   - generator.ts: GhostGolfer class with full scoring algorithm
   - 62 unit tests all passing
+- [x] **09-score-generation-ui** - Complete UI for score generation:
+  - GlassCard.tsx: Reusable glass card container
+  - GlassButton.tsx: Glass-morphism button with loading state
+  - CourseSelector.tsx: Dropdown for preset courses
+  - ScoreForm.tsx: Form with course selection and handicap input
+  - StatsCards.tsx: Three stat cards (gross, net, course hcp)
+  - HoleRow.tsx: Single scorecard row component
+  - ScoreCard.tsx: Full 18-hole scorecard with OUT/IN/TOT
+  - useScoreGeneration.ts: Hook for generation logic
+  - presets.ts: Baytree Blue/White course data
 
 ## Blockers
 None currently
