@@ -1,10 +1,10 @@
 # Golf Ghost Online - Task Tracker
 
 ## Current Phase
-**Phase 4: Lambda Functions**
+**Phase 5: AWS Infrastructure**
 
 ## Active Task
-`16-dynamodb-table` - Create/configure DynamoDB table for courses
+`18-s3-bucket` - Create S3 bucket for static hosting
 
 ## Task Status
 
@@ -31,8 +31,8 @@
 - [x] **13-lambda-setup** - Lambda project structure with shared scoring code
 - [x] **14-generate-lambda** - `generate-score` Lambda function
 - [x] **15-courses-lambda** - Course CRUD Lambda functions
-- [ ] **16-dynamodb-table** - Create/configure DynamoDB table for courses
-- [ ] **17-seed-courses** - Seed Baytree courses from `golf_courses.json`
+- [x] **16-dynamodb-table** - Create/configure DynamoDB table for courses
+- [x] **17-seed-courses** - Seed Baytree courses from `golf_courses.json`
 
 ### Phase 5: AWS Infrastructure
 - [ ] **18-s3-bucket** - Create S3 bucket for static hosting
@@ -78,6 +78,12 @@
   - lambda/create-course/: POST /courses handler
   - lambda/delete-course/: DELETE /courses/{id} handler
   - scripts/sync-scoring.sh: Sync script for scoring code changes
+- [x] **16-17-dynamodb-seed** - DynamoDB setup and course seeding (PRP-11):
+  - lambda/scripts/seed-courses.ts: Seeds Baytree Blue/White courses
+  - npm run seed script added to lambda/package.json
+  - tsx dev dependency for running TypeScript scripts
+  - Fixed par values in presets.ts (hole 8: par 8 → par 4)
+  - User runs `aws dynamodb create-table` manually (documented)
 
 ## Blockers
 None currently

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "seed": "tsx scripts/seed-courses.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.700.0",
@@ -16,6 +17,7 @@
     "@types/aws-lambda": "^8.10.147",
     "@types/node": "^20.17.10",
     "@types/uuid": "^10.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.2"
   }
 }
