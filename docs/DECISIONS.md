@@ -76,7 +76,7 @@
 **Decision**: Port `/old/ghost_golfer.py` algorithm exactly, not create a new one
 **Rationale**:
 - Algorithm already tested and produces realistic results
-- Gaussian distribution parameters (σ=1.1, σ=1.2) are tuned
+- Gaussian distribution parameters (Ïƒ=1.1, Ïƒ=1.2) are tuned
 - Difficulty factors (+0.3, -0.2) feel right
 - Score bounds (par-1 to par+6) are reasonable
 - Avoids introducing bugs by reimplementing from scratch
@@ -135,13 +135,31 @@
 - Separate deployment for Lambda vs frontend
 - API client needed in frontend code
 
+### DEC-013: INITIAL and PRP File Naming Convention
+**Date**: 2025-01-XX
+**Status**: Decided
+**Context**: Need consistent naming for spec files across INITIAL/ and PRPs/ folders
+**Decision**: Use prefixed, sequential numbering for both:
+- INITIAL files: `initial-{NN}-{feature-name}.md` (e.g., `initial-10-lambda-api.md`)
+- PRP files: `prp-{NN}-{feature-name}.md` (e.g., `prp-10-lambda-api.md`)
+**Rationale**:
+- Clear file type identification even when referenced outside folders
+- Easy to search across project (`initial-*` or `prp-*`)
+- Symmetry between the two folders
+- Sequential numbering independent of TASK.md task numbers (INITIALs may consolidate multiple tasks)
+**Notes**:
+- Numbering continues sequentially (last was 09, next is 10)
+- Task numbers in TASK.md remain separate (for tracking granular work items)
+
+---
+
 ## Pending Decisions
 
 ### DEC-010: User Authentication
 **Status**: Pending
 **Question**: Should users need accounts to use the app?
 **Options**:
-1. Anonymous usage only - simplest MVP ✓ (leaning this way)
+1. Anonymous usage only - simplest MVP âœ“ (leaning this way)
 2. Optional accounts for saving rounds
 3. Required accounts
 
@@ -152,7 +170,7 @@
 **Question**: What courses to include in MVP?
 **Options**:
 1. Manual entry only - user provides all course data
-2. Seed with Baytree courses from `golf_courses.json` ✓ (leaning this way)
+2. Seed with Baytree courses from `golf_courses.json` âœ“ (leaning this way)
 3. Full searchable database of many courses
 
 **Notes**: Start with Baytree courses as examples, allow custom entry.
@@ -161,7 +179,7 @@
 **Status**: Pending
 **Question**: Should generated rounds be saved?
 **Options**:
-1. No persistence - generate and display only ✓ (for MVP)
+1. No persistence - generate and display only âœ“ (for MVP)
 2. Session storage - save during session
 3. DynamoDB - persist long-term
 
