@@ -137,13 +137,12 @@ golf-ghost-online/
 │   ├── delete-course/       # DELETE /courses/{id} (auth required)
 │   └── shared/              # Shared code (scoring, db)
 ├── scripts/                 # Deployment scripts
-├── docs/                    # Architecture documentation
-└── old/                     # Original Python app (reference)
+└── docs/                    # Architecture documentation
 ```
 
 ## Scoring Algorithm
 
-Ported from the original Python implementation in `/old/ghost_golfer.py`:
+Ported from the original [Golf Ghost Python app](https://github.com/greggjuri/golf-ghost):
 
 1. **Course Handicap**: `round((Handicap Index × Slope Rating) / 113)`
 2. **Stroke Allocation**: Holes ranked 1-18 by difficulty receive strokes
@@ -176,12 +175,12 @@ Ported from the original Python implementation in `/old/ghost_golfer.py`:
 
 ## Original Python App
 
-This project is a web port of the Golf Ghost Python/Tkinter desktop app. The `/old` directory contains:
+This project is a web port of the [Golf Ghost](https://github.com/greggjuri/golf-ghost) Python/Tkinter desktop app. Key files ported:
 
-- `ghost_golfer.py` - Original scoring algorithm (ported to TypeScript)
-- `ui_theme.py` - Color scheme definitions
-- `golf_courses.json` - Sample course data (seeded to DynamoDB)
-- `course_manager.py` - Course CRUD logic
+- `ghost_golfer.py` → `src/lib/scoring/generator.ts`
+- `ui_theme.py` → Tailwind config + CSS
+- `golf_courses.json` → DynamoDB seed data
+- `course_manager.py` → Lambda CRUD functions
 
 ## Scripts
 
