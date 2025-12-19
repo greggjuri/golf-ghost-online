@@ -4,14 +4,29 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { CourseList } from '@/components/manage/CourseList';
 import { CourseEditor } from '@/components/manage/CourseEditor';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { CourseRecord, CourseInput } from '@/lib/api/types';
 import { getCourses, createCourse, updateCourse, deleteCourse } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 
 /**
  * Course Management Page
  * Allows users to create, edit, and delete golf courses
+ * Protected - requires authentication
  */
 export default function ManagePage() {
+  return (
+    <ProtectedRoute>
+      <ManagePageContent />
+    </ProtectedRoute>
+  );
+}
+
+/**
+ * Internal component with the actual page content
+ */
+function ManagePageContent() {
+  const { user, signOut } = useAuth();
   // State
   const [courses, setCourses] = useState<CourseRecord[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<CourseRecord | null>(null);
@@ -121,7 +136,13 @@ export default function ManagePage() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex items-center gap-2">
+            <nav className="flex items-center gap-2 md:gap-4">
+              {/* User Info */}
+              {user && (
+                <span className="hidden md:inline text-sm text-slate-400">
+                  {user}
+                </span>
+              )}
               <Link
                 href="/"
                 className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 rounded-lg hover:bg-slate-800/50 transition-colors"
@@ -134,6 +155,12 @@ export default function ManagePage() {
               >
                 Manage
               </Link>
+              <button
+                onClick={signOut}
+                className="px-4 py-2 text-sm font-medium text-red-400 hover:text-red-300 rounded-lg hover:bg-red-500/10 transition-colors"
+              >
+                Logout
+              </button>
             </nav>
           </div>
         </div>

@@ -15,6 +15,7 @@
     "deploy:lambdas": "bash scripts/deploy-lambdas.sh"
   },
   "dependencies": {
+    "amazon-cognito-identity-js": "^6.3.16",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",

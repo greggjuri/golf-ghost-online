@@ -6,9 +6,11 @@ import { StatsCards } from '@/components/StatsCards';
 import { ScoreCard } from '@/components/ScoreCard';
 import { useScoreGeneration } from '@/hooks/useScoreGeneration';
 import { getTotalPar } from '@/lib/courses/presets';
+import { useAuth } from '@/lib/auth';
 
 export default function Home() {
   const { round, course, isGenerating, error, generate } = useScoreGeneration();
+  const { isAuthenticated, user, signOut, isLoading: authLoading } = useAuth();
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -25,7 +27,13 @@ export default function Home() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex items-center gap-2">
+            <nav className="flex items-center gap-2 md:gap-4">
+              {/* User Info (shown when authenticated) */}
+              {!authLoading && isAuthenticated && user && (
+                <span className="hidden md:inline text-sm text-slate-400">
+                  {user}
+                </span>
+              )}
               <Link
                 href="/"
                 className="px-4 py-2 text-sm font-medium text-cyan-400 bg-cyan-500/10 rounded-lg border border-cyan-500/20"
@@ -38,6 +46,24 @@ export default function Home() {
               >
                 Manage
               </Link>
+              {/* Auth buttons */}
+              {!authLoading && (
+                isAuthenticated ? (
+                  <button
+                    onClick={signOut}
+                    className="px-4 py-2 text-sm font-medium text-red-400 hover:text-red-300 rounded-lg hover:bg-red-500/10 transition-colors"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 rounded-lg hover:bg-slate-800/50 transition-colors"
+                  >
+                    Login
+                  </Link>
+                )
+              )}
             </nav>
           </div>
         </div>

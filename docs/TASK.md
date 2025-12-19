@@ -1,10 +1,10 @@
 # Golf Ghost Online - Task Tracker
 
 ## Current Phase
-**Phase 7: Course Management** - COMPLETE
+**Phase 8: Authentication** - COMPLETE
 
 ## Active Task
-None - Course management feature complete! Ready for deployment.
+None - Authentication feature complete! Ready for deployment.
 
 ## Task Status
 
@@ -124,6 +124,27 @@ None - Course management feature complete! Ready for deployment.
   - src/app/manage/page.tsx: Course management page with full CRUD
   - src/app/page.tsx: Added navigation header with Generate/Manage links
   - 66 tests passing, build successful
+
+### Phase 8: Authentication
+- [x] **28-cognito-auth** - Cognito authentication for course management (PRP-16):
+  - scripts/setup-cognito.sh: Create User Pool and App Client
+  - scripts/create-admin-user.sh: Create admin user with password
+  - scripts/setup-cognito-authorizer.sh: Add JWT authorizer to API Gateway
+  - scripts/update-api-cors.sh: Update CORS for Authorization header
+  - src/lib/auth/config.ts: Cognito configuration
+  - src/lib/auth/cognito.ts: Cognito client wrapper (signIn, signOut, tokens)
+  - src/lib/auth/AuthContext.tsx: React auth context provider
+  - src/lib/auth/useAuth.ts: Auth hook
+  - src/lib/auth/index.ts: Barrel export
+  - src/app/login/page.tsx: Login page with glass-morphism styling
+  - src/components/ProtectedRoute.tsx: Route guard component
+  - src/components/Providers.tsx: Client-side providers wrapper
+  - src/app/layout.tsx: Wrapped with AuthProvider
+  - src/app/manage/page.tsx: Protected with ProtectedRoute, logout button
+  - src/app/page.tsx: Updated nav with Login/Logout buttons
+  - src/lib/api/client.ts: Auth headers for protected API calls
+  - .env.example: Added Cognito env vars
+  - docs/DECISIONS.md: Added DEC-014 (Cognito for Authentication)
 
 ## Blockers
 None currently

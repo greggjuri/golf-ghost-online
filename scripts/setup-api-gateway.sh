@@ -25,7 +25,7 @@ else
     --cors-configuration '{
       "AllowOrigins": ["https://ghost.jurigregg.com", "http://localhost:3000"],
       "AllowMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      "AllowHeaders": ["Content-Type"],
+      "AllowHeaders": ["Content-Type", "Authorization"],
       "AllowCredentials": false
     }' \
     --region $REGION \

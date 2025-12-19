@@ -151,35 +151,52 @@
 - Numbering continues sequentially (last was 09, next is 10)
 - Task numbers in TASK.md remain separate (for tracking granular work items)
 
+### DEC-014: Cognito for Authentication
+**Date**: 2025-12-19
+**Status**: Decided
+**Context**: Need to protect course management from unauthorized access while keeping score generation public
+**Decision**: Use AWS Cognito User Pools for authentication
+**Rationale**:
+- Consistent with existing AWS infrastructure (API Gateway, Lambda, DynamoDB)
+- Industry-standard JWT-based auth
+- Reusable pattern for future projects
+- Essentials tier covers our usage (10,000 MAU free forever)
+- No server-side session management needed
+- Native API Gateway JWT authorizer integration
+**Alternatives Considered**:
+- Simple password in Lambda env var: Too basic, not scalable, not secure
+- Cloudflare Access: External dependency, not in AWS ecosystem
+- Auth0: Adds another service when Cognito is already in AWS
+- Custom Lambda authorizer: More work, Cognito handles JWT validation
+**Consequences**:
+- Need to manage Cognito resources in AWS
+- Frontend needs Cognito SDK dependency (~50KB gzipped)
+- Token management adds complexity to API client
+**Implementation**:
+- Protected routes: POST/PUT/DELETE /courses
+- Public routes: GET /courses, POST /generate-score
+- Single admin user (no self-registration)
+- Tokens stored in sessionStorage (cleared on browser close)
+
 ---
 
 ## Pending Decisions
 
-### DEC-010: User Authentication
-**Status**: Pending
-**Question**: Should users need accounts to use the app?
-**Options**:
-1. Anonymous usage only - simplest MVP âœ“ (leaning this way)
-2. Optional accounts for saving rounds
-3. Required accounts
-
-**Notes**: For MVP, anonymous usage. Can add accounts later if needed.
-
-### DEC-011: Course Database Scope
+### DEC-015: Course Database Scope
 **Status**: Pending
 **Question**: What courses to include in MVP?
 **Options**:
 1. Manual entry only - user provides all course data
-2. Seed with Baytree courses from `golf_courses.json` âœ“ (leaning this way)
+2. Seed with Baytree courses from `golf_courses.json` (current)
 3. Full searchable database of many courses
 
 **Notes**: Start with Baytree courses as examples, allow custom entry.
 
-### DEC-012: Round History
+### DEC-016: Round History
 **Status**: Pending
 **Question**: Should generated rounds be saved?
 **Options**:
-1. No persistence - generate and display only âœ“ (for MVP)
+1. No persistence - generate and display only (current)
 2. Session storage - save during session
 3. DynamoDB - persist long-term
 
