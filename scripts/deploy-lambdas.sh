@@ -13,6 +13,7 @@ FUNCTIONS=(
   "golf-ghost-generate-score:generate-score/index.ts"
   "golf-ghost-get-courses:get-courses/index.ts"
   "golf-ghost-create-course:create-course/index.ts"
+  "golf-ghost-update-course:update-course/index.ts"
   "golf-ghost-delete-course:delete-course/index.ts"
 )
 

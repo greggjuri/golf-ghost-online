@@ -59,6 +59,21 @@ export async function createCourse(course: CourseInput): Promise<CourseRecord> {
 }
 
 /**
+ * Update an existing course in DynamoDB via API
+ */
+export async function updateCourse(
+  courseId: string,
+  course: CourseInput
+): Promise<CourseRecord> {
+  const response = await fetch(`${API_URL}/courses/${courseId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(course),
+  });
+  return handleResponse<CourseRecord>(response);
+}
+
+/**
  * Delete a course from DynamoDB via API
  */
 export async function deleteCourse(courseId: string): Promise<void> {

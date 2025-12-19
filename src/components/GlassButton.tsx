@@ -7,7 +7,7 @@ interface GlassButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'danger';
   className?: string;
   type?: 'button' | 'submit';
 }
@@ -39,6 +39,12 @@ export function GlassButton({
       hover:from-blue-500/90 hover:to-cyan-400/90
       text-white
       shadow-lg shadow-blue-500/20
+    `,
+    danger: `
+      bg-gradient-to-r from-red-600/80 to-red-500/80
+      hover:from-red-500/90 hover:to-red-400/90
+      text-white
+      shadow-lg shadow-red-500/20
     `,
   };
 

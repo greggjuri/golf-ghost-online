@@ -52,6 +52,34 @@ export async function createCourse(input: CourseInput): Promise<CourseRecord> {
   return course;
 }
 
+export async function updateCourse(
+  courseId: string,
+  input: CourseInput
+): Promise<CourseRecord | null> {
+  // Check if course exists first
+  const existing = await getCourseById(courseId);
+  if (!existing) {
+    return null;
+  }
+
+  const now = new Date().toISOString();
+  const course: CourseRecord = {
+    ...input,
+    courseId,
+    createdAt: existing.createdAt, // Preserve original creation time
+    updatedAt: now,
+  };
+
+  await docClient.send(
+    new PutCommand({
+      TableName: TABLE_NAME,
+      Item: course,
+    })
+  );
+
+  return course;
+}
+
 export async function deleteCourse(courseId: string): Promise<boolean> {
   // Check if course exists first
   const existing = await getCourseById(courseId);

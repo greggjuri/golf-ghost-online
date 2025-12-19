@@ -24,7 +24,7 @@ else
     --protocol-type HTTP \
     --cors-configuration '{
       "AllowOrigins": ["https://ghost.jurigregg.com", "http://localhost:3000"],
-      "AllowMethods": ["GET", "POST", "DELETE", "OPTIONS"],
+      "AllowMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       "AllowHeaders": ["Content-Type"],
       "AllowCredentials": false
     }' \
@@ -85,6 +85,7 @@ echo "Creating routes..."
 create_route "golf-ghost-generate-score" "POST" "/generate-score"
 create_route "golf-ghost-get-courses" "GET" "/courses"
 create_route "golf-ghost-create-course" "POST" "/courses"
+create_route "golf-ghost-update-course" "PUT" "/courses/{id}"
 create_route "golf-ghost-delete-course" "DELETE" "/courses/{id}"
 
 # Create or update production stage with auto-deploy

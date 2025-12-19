@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ScoreForm } from '@/components/ScoreForm';
 import { StatsCards } from '@/components/StatsCards';
 import { ScoreCard } from '@/components/ScoreCard';
@@ -10,24 +11,47 @@ export default function Home() {
   const { round, course, isGenerating, error, generate } = useScoreGeneration();
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
+    <main className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="text-center mb-8 md:mb-12">
-        <div className="flex items-center justify-center gap-3 md:gap-4 mb-2">
-          <span className="text-4xl md:text-5xl" role="img" aria-label="robot">
-            &#129302;
-          </span>
-          <h1 className="text-3xl md:text-5xl font-bold text-text-primary tracking-tight">
-            GOLF GHOST
-          </h1>
+      <header className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <span className="text-2xl md:text-3xl">&#129302;</span>
+              <h1 className="text-xl md:text-2xl font-bold text-text-primary tracking-tight">
+                GOLF GHOST
+              </h1>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex items-center gap-2">
+              <Link
+                href="/"
+                className="px-4 py-2 text-sm font-medium text-cyan-400 bg-cyan-500/10 rounded-lg border border-cyan-500/20"
+              >
+                Generate
+              </Link>
+              <Link
+                href="/manage"
+                className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 rounded-lg hover:bg-slate-800/50 transition-colors"
+              >
+                Manage
+              </Link>
+            </nav>
+          </div>
         </div>
+      </header>
+
+      {/* Subtitle */}
+      <div className="text-center py-6">
         <p className="text-text-secondary text-sm md:text-base">
           AI-Powered Score Generation System
         </p>
-      </header>
+      </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto">
+      <div className="flex-1 max-w-6xl mx-auto w-full px-4 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left Column - Form */}
           <div className="lg:col-span-4">
@@ -71,7 +95,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-12 md:mt-16 text-center text-text-muted text-sm">
+      <footer className="py-4 text-center text-text-muted text-sm border-t border-slate-700/50">
         <p>ghost.jurigregg.com</p>
       </footer>
     </main>

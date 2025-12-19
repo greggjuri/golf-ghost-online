@@ -1,10 +1,10 @@
 # Golf Ghost Online - Task Tracker
 
 ## Current Phase
-**Phase 6: Integration & Deploy** - COMPLETE
+**Phase 7: Course Management** - COMPLETE
 
 ## Active Task
-None - All tasks complete! Site live at https://ghost.jurigregg.com
+None - Course management feature complete! Ready for deployment.
 
 ## Task Status
 
@@ -110,6 +110,20 @@ None - All tasks complete! Site live at https://ghost.jurigregg.com
   - Deployed to S3 bucket (golf-ghost-online)
   - CloudFront distribution with DefaultRootObject and SPA routing
   - Site live at https://ghost.jurigregg.com
+
+### Phase 7: Course Management
+- [x] **27-course-management** - Full course management feature (PRP-15):
+  - lambda/shared/db.ts: Added updateCourse() function
+  - lambda/update-course/index.ts: PUT /courses/{id} Lambda handler
+  - scripts/deploy-lambdas.sh: Added update-course to deployment
+  - scripts/setup-api-gateway.sh: Added PUT route with CORS update
+  - src/lib/api/client.ts: Added updateCourse() API call
+  - src/components/manage/CourseList.tsx: Left panel course list
+  - src/components/manage/CourseEditor.tsx: Right panel editor with 18-hole grid
+  - src/components/GlassButton.tsx: Added danger variant (red)
+  - src/app/manage/page.tsx: Course management page with full CRUD
+  - src/app/page.tsx: Added navigation header with Generate/Manage links
+  - 66 tests passing, build successful
 
 ## Blockers
 None currently
