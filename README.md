@@ -1,134 +1,117 @@
-# Golf Ghost Online 🤖⛳
+# Golf Ghost Online
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-DynamoDB-FF9900?style=flat&logo=amazondynamodb&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![AWS](https://img.shields.io/badge/AWS-Serverless-FF9900?style=flat&logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-**AI-Powered Golf Score Generation System**
+Generate realistic golf scores based on your GHIN handicap index. Uses USGA handicap formulas with statistical modeling to produce accurate round simulations.
 
-Generate realistic golf scores based on your GHIN handicap index. Perfect for practice rounds, simulations, tournament planning, or testing golf applications.
+**Live:** [ghost.jurigregg.com](https://ghost.jurigregg.com)
 
-🌐 **Live at**: [ghost.jurigregg.com](https://ghost.jurigregg.com)
-
-## Overview
-
-Golf Ghost Online is a web application that generates statistically accurate golf scores. Given a player's handicap index and course information, it produces realistic 18-hole scores that match expected performance distributions.
-
-This is a web port of the original [Golf Ghost Python app](./old/), rebuilt with modern web technologies.
+---
 
 ## Features
 
-- **🎯 Realistic Score Generation** - Uses Gaussian distributions tuned to match real handicap performance
-- **📊 Hole-by-Hole Breakdown** - See scores for each hole with stroke allocation
-- **🎨 Color-Coded Scorecard** - Visual feedback from eagle (green) to triple bogey (red)
-- **⚡ Instant Results** - Generate a round in milliseconds
-- **📱 Mobile Friendly** - Works on any device
-- **🌙 Dark Theme** - Easy on the eyes, beautiful design
-
-## How It Works
-
-### The Algorithm
-
-The scoring engine implements USGA handicap principles with statistical modeling:
-
-1. **Course Handicap Calculation**
-   ```
-   Course Handicap = round((Handicap Index × Slope Rating) / 113)
-   ```
-
-2. **Stroke Allocation**
-   - Holes ranked 1-18 by difficulty receive strokes first
-   - Players with handicap > 18 receive 2 strokes on hardest holes
-
-3. **Score Distribution**
-   - Round-level variance: Gaussian (μ=0, σ=1.2)
-   - Per-hole variance: Gaussian (μ=0, σ=1.1)
-   - Difficulty adjustment: +0.3 for hard holes, -0.2 for easy holes
-   - Bounded between eagle (par-1) and triple bogey+ (par+6)
-
-### Inputs Required
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| Handicap Index | Your GHIN handicap (0.0-54.0) | 15.0 |
-| Course Rating | Course difficulty rating | 72.3 |
-| Slope Rating | Course slope (55-155) | 130 |
-| Par Values | Par for each hole (18 values) | [4,3,4,5,...] |
-| Hole Handicaps | Difficulty ranking 1-18 | [7,15,3,1,...] |
-
-### Sample Output
-
-```
-┌────────────────────────────────────────┐
-│  GOLF GHOST - Generated Round          │
-├────────────────────────────────────────┤
-│  Gross: 87 (+15)  Net: 72 (E)          │
-│  Course Handicap: 15                    │
-├──────┬─────┬───────┬─────┬─────┬───────┤
-│ Hole │ Par │ Gross │ Net │ +/- │ Color │
-├──────┼─────┼───────┼─────┼─────┼───────┤
-│  1   │  4  │   5   │  4  │ +1  │ 🟠    │
-│  2   │  3  │   3   │  3  │  E  │ ⚪    │
-│  3   │  4  │   4   │  3  │  E  │ ⚪    │
-│ ...  │ ... │  ...  │ ... │ ... │ ...   │
-└──────┴─────┴───────┴─────┴─────┴───────┘
-```
+- **Score Generation** - Gaussian distributions tuned to match real handicap performance
+- **Course Management** - Full CRUD operations for custom courses (authenticated)
+- **Admin Authentication** - Cognito-based JWT auth protects course management
+- **Hole-by-Hole Breakdown** - Detailed scorecard with stroke allocation
+- **Color-Coded Results** - Visual feedback from eagle (green) to triple bogey (red)
+- **Mobile Responsive** - Works on any device with dark theme
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), React 18, static export
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS with glass-morphism effects
-- **API**: AWS API Gateway + Lambda
-- **Database**: AWS DynamoDB
-- **Hosting**: S3 + CloudFront CDN
-- **Domain**: Route53
+| Layer | Technology |
+|-------|------------|
+| Frontend | Next.js 14, React 18, TypeScript, Tailwind CSS |
+| API | AWS API Gateway (HTTP) + Lambda |
+| Database | AWS DynamoDB |
+| Auth | AWS Cognito User Pools |
+| Hosting | S3 + CloudFront CDN |
+| DNS | Route53 |
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ 
-- npm or yarn
-- AWS account (for DynamoDB, optional for local dev)
+- Node.js 18+
+- AWS CLI configured (for deployment)
 
-### Installation
+### Local Development
 
 ```bash
-# Clone the repository
+# Clone and install
 git clone https://github.com/yourusername/golf-ghost-online.git
 cd golf-ghost-online
-
-# Install dependencies
 npm install
 
-# Set up environment variables
+# Configure environment
 cp .env.example .env.local
-# Edit .env.local with your values
+# Edit .env.local with your API URL and Cognito settings
 
-# Run development server
+# Run dev server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+Open [http://localhost:3000](http://localhost:3000)
 
 ### Environment Variables
 
 ```bash
 # .env.local
-
-# API Gateway endpoint (after Lambda deployment)
 NEXT_PUBLIC_API_URL=https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod
+NEXT_PUBLIC_COGNITO_REGION=us-east-1
+NEXT_PUBLIC_COGNITO_USER_POOL_ID=us-east-1_xxxxxxxxx
+NEXT_PUBLIC_COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 
-# App URL
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+## Deployment
 
-# For local development with AWS (optional)
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
+### First-Time Setup
+
+Run these scripts in order to set up AWS infrastructure:
+
+```bash
+# 1. Create DynamoDB table
+aws dynamodb create-table \
+  --table-name golf-ghost-courses \
+  --attribute-definitions AttributeName=id,AttributeType=S \
+  --key-schema AttributeName=id,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region us-east-1
+
+# 2. Deploy Lambda functions
+./scripts/deploy-lambdas.sh
+
+# 3. Set up API Gateway with routes
+./scripts/setup-api-gateway.sh
+
+# 4. Seed initial course data
+cd lambda && npm run seed && cd ..
+
+# 5. Set up Cognito authentication
+./scripts/setup-cognito.sh
+./scripts/create-admin-user.sh your-email@example.com
+./scripts/setup-cognito-authorizer.sh
+./scripts/update-api-cors.sh
+
+# 6. Set up S3, CloudFront, DNS (update scripts with your values first)
+./scripts/setup-s3-policy.sh
+./scripts/setup-cloudfront-errors.sh
+./scripts/setup-dns.sh
+
+# 7. Deploy the site
+npm run deploy
+```
+
+### Subsequent Deployments
+
+```bash
+npm run deploy           # Deploy frontend only
+npm run deploy:lambdas   # Deploy Lambda functions
+npm run deploy:infra     # Full infrastructure deployment
 ```
 
 ## Project Structure
@@ -136,159 +119,84 @@ AWS_SECRET_ACCESS_KEY=your_secret
 ```
 golf-ghost-online/
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── page.tsx           # Home page
-│   │   ├── layout.tsx         # Root layout
-│   │   └── globals.css        # Global styles
-│   ├── components/            # React components
-│   │   ├── GlassButton.tsx
-│   │   ├── GlassCard.tsx
-│   │   ├── ScoreForm.tsx
-│   │   └── ScoreCard.tsx
+│   ├── app/                 # Next.js App Router pages
+│   │   ├── page.tsx         # Home - score generation
+│   │   ├── manage/          # Course management (protected)
+│   │   └── login/           # Login page
+│   ├── components/          # React components
 │   ├── lib/
-│   │   ├── scoring/           # Scoring algorithm
-│   │   │   ├── generator.ts   # Main GhostGolfer class
-│   │   │   ├── handicap.ts    # Handicap calculations
-│   │   │   └── distribution.ts # Gaussian random
-│   │   └── api/
-│   │       └── client.ts      # Lambda API client
-│   └── types/                 # TypeScript interfaces
-├── lambda/                    # AWS Lambda functions
-│   ├── generate-score/
-│   ├── get-courses/
-│   └── shared/               # Shared code (scoring, db)
-├── infra/                     # AWS infrastructure (SAM/CDK)
-├── docs/                      # Architecture docs
-├── old/                       # Original Python app
-├── examples/                  # Styling references
-└── CLAUDE.md                  # AI assistant rules
+│   │   ├── scoring/         # Score generation algorithm
+│   │   ├── api/             # Lambda API client
+│   │   └── auth/            # Cognito auth module
+│   └── types/               # TypeScript interfaces
+├── lambda/                  # AWS Lambda functions
+│   ├── generate-score/      # POST /generate-score
+│   ├── get-courses/         # GET /courses
+│   ├── create-course/       # POST /courses (auth required)
+│   ├── update-course/       # PUT /courses/{id} (auth required)
+│   ├── delete-course/       # DELETE /courses/{id} (auth required)
+│   └── shared/              # Shared code (scoring, db)
+├── scripts/                 # Deployment scripts
+├── docs/                    # Architecture documentation
+└── old/                     # Original Python app (reference)
 ```
 
-## Development
+## Scoring Algorithm
 
-### Scripts
+Ported from the original Python implementation in `/old/ghost_golfer.py`:
 
-```bash
-npm run dev      # Start development server
-npm run build    # Production build
-npm run start    # Start production server
-npm run lint     # Run ESLint
-npm run test     # Run tests
-```
+1. **Course Handicap**: `round((Handicap Index × Slope Rating) / 113)`
+2. **Stroke Allocation**: Holes ranked 1-18 by difficulty receive strokes
+3. **Score Distribution**:
+   - Round variance: Gaussian (μ=0, σ=1.2)
+   - Hole variance: Gaussian (μ=0, σ=1.1)
+   - Difficulty adjustment: +0.3 hard holes, -0.2 easy holes
+   - Bounds: eagle (par-1) to triple+ (par+6)
 
-### Context Engineering
+## API Endpoints
 
-This project uses a context engineering workflow for AI-assisted development:
-
-- `CLAUDE.md` - Rules for AI coding assistants
-- `docs/PLANNING.md` - Architecture overview
-- `docs/TASK.md` - Current task status
-- `docs/DECISIONS.md` - Decision log
-- `INITIAL/` - Feature specifications
-- `PRPs/` - Generated implementation plans
-
-See [HANDOFF.md](./HANDOFF.md) for the full workflow.
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/generate-score` | No | Generate a round |
+| GET | `/courses` | No | List all courses |
+| POST | `/courses` | Yes | Create course |
+| PUT | `/courses/{id}` | Yes | Update course |
+| DELETE | `/courses/{id}` | Yes | Delete course |
 
 ## Score Colors
 
 | Score | Color | Hex |
 |-------|-------|-----|
-| Eagle or better | 🟢 Green | #10b981 |
-| Birdie | 🔵 Cyan | #22d3ee |
-| Par | ⚪ Gray | #64748b |
-| Bogey | 🟠 Orange | #f59e0b |
-| Double Bogey | 🟠 Deep Orange | #f97316 |
-| Triple+ | 🔴 Red | #ef4444 |
-
-## API Reference
-
-### Generate Score
-
-```http
-POST https://api.ghost.jurigregg.com/generate
-Content-Type: application/json
-
-{
-  "handicapIndex": 15.0,
-  "courseRating": 72.3,
-  "slopeRating": 130,
-  "parValues": [4,3,4,5,4,4,3,4,5,4,5,4,3,4,4,3,5,4],
-  "holeHandicaps": [7,15,3,1,11,5,17,9,13,8,2,14,16,6,4,18,10,12]
-}
-```
-
-**Response:**
-```json
-{
-  "id": "abc123",
-  "courseHandicap": 15,
-  "totalGross": 87,
-  "totalNet": 72,
-  "totalPar": 72,
-  "scores": [
-    {
-      "hole": 1,
-      "par": 4,
-      "grossScore": 5,
-      "strokesReceived": 1,
-      "netScore": 4
-    }
-  ]
-}
-```
-
-### Get Courses
-
-```http
-GET https://api.ghost.jurigregg.com/courses
-```
-
-### Create Course
-
-```http
-POST https://api.ghost.jurigregg.com/courses
-Content-Type: application/json
-
-{
-  "name": "My Course (Blue)",
-  "data": {
-    "tee_name": "Blue",
-    "course_rating": 72.3,
-    "slope_rating": 130,
-    "par_values": [...],
-    "hole_handicaps": [...],
-    "yardages": [...]
-  }
-}
-```
-
-## Contributing
-
-Contributions are welcome! Please read the architecture docs before submitting PRs:
-
-1. Check `docs/PLANNING.md` for architecture context
-2. Review `docs/DECISIONS.md` for past decisions
-3. Follow conventions in `CLAUDE.md`
-4. Update `docs/TASK.md` with your changes
+| Eagle or better | Green | `#10b981` |
+| Birdie | Cyan | `#22d3ee` |
+| Par | Gray | `#64748b` |
+| Bogey | Orange | `#f59e0b` |
+| Double Bogey | Deep Orange | `#f97316` |
+| Triple+ | Red | `#ef4444` |
 
 ## Original Python App
 
-The original Golf Ghost was a Python/Tkinter desktop application. See the `/old` directory for:
+This project is a web port of the Golf Ghost Python/Tkinter desktop app. The `/old` directory contains:
 
-- `ghost_golfer.py` - Original scoring algorithm
+- `ghost_golfer.py` - Original scoring algorithm (ported to TypeScript)
 - `ui_theme.py` - Color scheme definitions
-- `golf_courses.json` - Sample course data
+- `golf_courses.json` - Sample course data (seeded to DynamoDB)
+- `course_manager.py` - Course CRUD logic
+
+## Scripts
+
+```bash
+npm run dev          # Development server
+npm run build        # Production build
+npm run test         # Run tests (66 passing)
+npm run lint         # ESLint
+npm run deploy       # Deploy to S3/CloudFront
+```
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) for details.
-
-## Acknowledgments
-
-- USGA for handicap system documentation
-- Original Golf Ghost Python implementation
-- [jurigregg.com](https://jurigregg.com) for design inspiration
+MIT License - see [LICENSE](./LICENSE)
 
 ---
 
-**Generate your ghost round today! 🏌️‍♂️👻**
+Built with Next.js and AWS serverless infrastructure.
